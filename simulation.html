@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi - AgroProfit</title>
+    <!-- ✅ PERBAIKAN: GANTI style.css dengan 4 file CSS -->
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/component.css">
+    <link rel="stylesheet" href="css/page.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="dashboard.html" class="logo">
+                <i class="fas fa-leaf"></i> AgroProfit
+            </a>
+            <div class="nav-links">
+                <a href="dashboard.html">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <a href="simulation.html" class="active">
+                    <i class="fas fa-calculator"></i> Simulasi
+                </a>
+                <a href="#">
+                    <i class="fas fa-history"></i> Riwayat
+                </a>
+                <div class="user-menu">
+                    <span class="user-name" id="userName"></span>
+                    <button class="btn-logout" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Keluar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Simulasi Keuntungan Pertanian</h1>
+            <p>Hitung perkiraan keuntungan usaha tani Anda dengan parameter lengkap</p>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Left Column: Input Form -->
+            <div class="left-column">
+                <!-- Input Form -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-edit"></i>
+                        <h2>Input Data Pertanian</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-grid">
+                            <!-- Crop Type -->
+                            <div class="form-group">
+                                <label for="cropType">Jenis Tanaman</label>
+                                <select id="cropType">
+                                    <option value="padi">Padi Sawah</option>
+                                    <option value="jagung">Jagung</option>
+                                    <option value="kedelai">Kedelai</option>
+                                    <option value="cabe">Cabe Merah</option>
+                                    <option value="tomat">Tomat</option>
+                                    <option value="bawang">Bawang Merah</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Land Area -->
+                            <div class="form-group">
+                                <label for="landArea">Luas Lahan</label>
+                                <div class="input-with-unit">
+                                    <input type="number" id="landArea" value="1" min="0.01" step="0.01">
+                                    <div class="unit-toggle">
+                                        <button type="button" class="unit-btn active" data-unit="hektar">Hektar</button>
+                                        <button type="button" class="unit-btn" data-unit="meter">m²</button>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="unit" value="hektar">
+                            </div>
+                            
+                            <!-- Seed Cost -->
+                            <div class="form-group">
+                                <label for="seedCost">Biaya Bibit (Rp)</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-seedling"></i>
+                                    <input type="number" id="seedCost" value="2000000" min="0">
+                                </div>
+                            </div>
+                            
+                            <!-- Fertilizer Cost -->
+                            <div class="form-group">
+                                <label for="fertilizerCost">Biaya Pupuk & Pestisida (Rp)</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-prescription-bottle"></i>
+                                    <input type="number" id="fertilizerCost" value="1500000" min="0">
+                                </div>
+                            </div>
+                            
+                            <!-- Labor Cost -->
+                            <div class="form-group">
+                                <label for="laborCost">Biaya Tenaga Kerja (Rp)</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-users"></i>
+                                    <input type="number" id="laborCost" value="3000000" min="0">
+                                </div>
+                            </div>
+                            
+                            <!-- Estimated Harvest -->
+                            <div class="form-group">
+                                <label for="estimatedHarvest">Estimasi Hasil Panen (kg)</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-weight-hanging"></i>
+                                    <input type="number" id="estimatedHarvest" value="6000" min="0">
+                                </div>
+                            </div>
+                            
+                            <!-- Price per kg -->
+                            <div class="form-group">
+                                <label for="pricePerKg">Harga Jual per kg (Rp)</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-tag"></i>
+                                    <input type="number" id="pricePerKg" value="5000" min="0">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Calculate Button -->
+                        <button id="calculateBtn" class="btn btn-primary btn-block">
+                            <i class="fas fa-calculator"></i> Hitung Simulasi
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="card" id="resultsCard" style="display: none;">
+                    <div class="card-header">
+                        <i class="fas fa-chart-bar"></i>
+                        <h2>Hasil Simulasi</h2>
+                    </div>
+                    <div class="card-body">
+                        <!-- Results Grid -->
+                        <div class="results-grid">
+                            <div class="result-card total-cost">
+                                <h3>Total Modal</h3>
+                                <div class="result-value" id="totalCost">Rp 0</div>
+                            </div>
+                            
+                            <div class="result-card total-revenue">
+                                <h3>Total Pendapatan</h3>
+                                <div class="result-value" id="totalRevenue">Rp 0</div>
+                            </div>
+                            
+                            <div class="result-card profit">
+                                <h3>Keuntungan</h3>
+                                <div class="result-value" id="profit">Rp 0</div>
+                            </div>
+                            
+                            <div class="result-card roi">
+                                <h3>ROI</h3>
+                                <div class="result-value" id="roi">0%</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Chart Placeholder -->
+                        <div class="chart-container">
+                            <h3>Visualisasi Hasil</h3>
+                            <div id="profitChart" class="chart">
+                                <!-- Chart will be generated here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <button id="saveSimulationBtn" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Simpan Simulasi
+                            </button>
+                            <button id="exportPdfBtn" class="btn btn-outline">
+                                <i class="fas fa-file-pdf"></i> Export PDF
+                            </button>
+                            <button id="resetBtn" class="btn btn-outline">
+                                <i class="fas fa-redo"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Sidebar -->
+            <div class="right-column">
+                <!-- User Info -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-user"></i>
+                        <h2>Info Akun</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="user-info">
+                            <div class="user-avatar">
+                                <span id="userInitials">P</span>
+                            </div>
+                            <div class="user-details">
+                                <h3 id="sidebarUserName">Petani</h3>
+                                <p><i class="fas fa-star"></i> <span id="sidebarUserPoints">0</span> Poin</p>
+                                <p><i class="fas fa-calculator"></i> <span id="sidebarUserSimulations">0</span> Simulasi</p>
+                                <p><i class="fas fa-chart-line"></i> Level <span id="sidebarUserLevel">1</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Farming Tips -->
+                <div class="card tips-card">
+                    <div class="card-header">
+                        <i class="fas fa-lightbulb"></i>
+                        <h2>Tips Pertanian</h2>
+                    </div>
+                    <div class="card-body">
+                        <ul class="tips-list">
+                            <li>Gunakan benih bersertifikat untuk hasil optimal</li>
+                            <li>Pupuk organik meningkatkan kesuburan tanah jangka panjang</li>
+                            <li>Rotasi tanaman mencegah penumpukan hama</li>
+                            <li>Pantau harga pasar sebelum menentukan harga jual</li>
+                            <li>Faktor cuaca dan musim mempengaruhi hasil panen</li>
+                            <li>Selalu siapkan dana cadangan untuk keadaan darurat</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Gamification Info -->
+                <div class="card gamification-card">
+                    <div class="card-header">
+                        <i class="fas fa-trophy"></i>
+                        <h2>Sistem Poin</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="points-info">
+                            <div class="points-value">+10</div>
+                            <p>Poin setiap simulasi yang disimpan</p>
+                        </div>
+                        
+                        <h3>Badges yang Tersedia:</h3>
+                        <div class="badges-list">
+                            <div class="badge-item">
+                                <span class="badge-icon">🌱</span>
+                                <div class="badge-info">
+                                    <strong>Pemula</strong>
+                                    <small>5 simulasi</small>
+                                </div>
+                            </div>
+                            <div class="badge-item">
+                                <span class="badge-icon">🌾</span>
+                                <div class="badge-info">
+                                    <strong>Petani Hebat</strong>
+                                    <small>15 simulasi</small>
+                                </div>
+                            </div>
+                            <div class="badge-item">
+                                <span class="badge-icon">🏆</span>
+                                <div class="badge-info">
+                                    <strong>Master Panen</strong>
+                                    <small>50 simulasi</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ PERBAIKAN: Tambahkan js/ di depan semua script -->
+    <script src="js/db.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/calculator.js"></script>
+    <script src="js/main.js"></script>
+    
+    <script>
+        // ✅ PERBAIKAN: Gunakan instance dari auth.js, jangan buat baru
+        let authSystem = window.Auth;
+        
+        // Jika belum ada instance global, cek apakah class AuthSystem ada
+        if (!authSystem && typeof AuthSystem !== 'undefined') {
+            authSystem = new AuthSystem();
+            window.Auth = authSystem; // Simpan sebagai global
+        }
+        
+        // ✅ PERBAIKAN: Cek apakah calculator.js sudah dimuat
+        let calculator = window.ProfitCalculator || window.calculator;
+        if (!calculator && typeof ProfitCalculator !== 'undefined') {
+            calculator = new ProfitCalculator();
+        }
+        
+        let currentUser = null;
+        let currentCalculation = null;
+        
+        // DOM Ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Simulation page loaded');
+            
+            // ✅ PERBAIKAN: Cek apakah authSystem ada sebelum digunakan
+            if (!authSystem) {
+                console.error('AuthSystem tidak ditemukan!');
+                alert('Sistem autentikasi tidak tersedia. Redirect ke login...');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Check authentication
+            if (authSystem.requireAuth && !authSystem.requireAuth()) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Get current user
+            currentUser = authSystem.getCurrentUser ? authSystem.getCurrentUser() : null;
+            
+            if (!currentUser) {
+                console.log('User tidak ditemukan, redirect ke login');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Update user info
+            updateUserInfo();
+            
+            // Initialize form
+            initializeForm();
+            
+            // Setup event listeners
+            setupEventListeners();
+        });
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Calculate button
+            const calculateBtn = document.getElementById('calculateBtn');
+            if (calculateBtn) {
+                calculateBtn.addEventListener('click', calculateSimulation);
+            }
+            
+            // Save button
+            const saveBtn = document.getElementById('saveSimulationBtn');
+            if (saveBtn) {
+                saveBtn.addEventListener('click', saveSimulation);
+            }
+            
+            // Reset button
+            const resetBtn = document.getElementById('resetBtn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', resetForm);
+            }
+            
+            // Export PDF button
+            const exportBtn = document.getElementById('exportPdfBtn');
+            if (exportBtn) {
+                exportBtn.addEventListener('click', exportToPDF);
+            }
+            
+            // Crop type change
+            const cropSelect = document.getElementById('cropType');
+            if (cropSelect) {
+                cropSelect.addEventListener('change', updateCropDefaults);
+            }
+            
+            // Unit toggle buttons
+            const unitButtons = document.querySelectorAll('.unit-btn');
+            unitButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    unitButtons.forEach(b => b.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Update hidden input
+                    document.getElementById('unit').value = this.dataset.unit;
+                    
+                    // Recalculate if we have a current calculation
+                    if (currentCalculation) {
+                        calculateSimulation();
+                    }
+                });
+            });
+        }
+        
+        // Initialize form
+        function initializeForm() {
+            // Set user avatar initials
+            if (currentUser && currentUser.name) {
+                const initials = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
+                const userInitials = document.getElementById('userInitials');
+                if (userInitials) userInitials.textContent = initials;
+            }
+            
+            // Initialize crop defaults
+            updateCropDefaults();
+        }
+        
+        // Update user info
+        function updateUserInfo() {
+            if (!currentUser) return;
+            
+            // Navbar user name
+            const userNameElement = document.getElementById('userName');
+            if (userNameElement) userNameElement.textContent = currentUser.name;
+            
+            // Sidebar user info
+            const sidebarUserName = document.getElementById('sidebarUserName');
+            const sidebarUserPoints = document.getElementById('sidebarUserPoints');
+            const sidebarUserSimulations = document.getElementById('sidebarUserSimulations');
+            const sidebarUserLevel = document.getElementById('sidebarUserLevel');
+            
+            if (sidebarUserName) sidebarUserName.textContent = currentUser.name;
+            if (sidebarUserPoints) sidebarUserPoints.textContent = currentUser.points || 0;
+            if (sidebarUserSimulations) sidebarUserSimulations.textContent = currentUser.simulationsCount || 0;
+            if (sidebarUserLevel) sidebarUserLevel.textContent = currentUser.level || 1;
+        }
+        
+        // Update crop defaults
+        function updateCropDefaults() {
+            const cropType = document.getElementById('cropType').value;
+            
+            // Check if calculator has this method
+            if (calculator && calculator.getCropDefaults) {
+                const cropData = calculator.getCropDefaults(cropType);
+                
+                if (cropData) {
+                    const harvestInput = document.getElementById('estimatedHarvest');
+                    const priceInput = document.getElementById('pricePerKg');
+                    
+                    if (harvestInput) harvestInput.value = cropData.harvest || 6000;
+                    if (priceInput) priceInput.value = cropData.price || 5000;
+                }
+            }
+        }
+        
+        // Calculate simulation
+        function calculateSimulation() {
+            try {
+                // Get form values
+                const formData = {
+                    cropType: document.getElementById('cropType').value,
+                    landArea: parseFloat(document.getElementById('landArea').value) || 1,
+                    unit: document.getElementById('unit').value,
+                    seedCost: parseFloat(document.getElementById('seedCost').value) || 0,
+                    fertilizerCost: parseFloat(document.getElementById('fertilizerCost').value) || 0,
+                    laborCost: parseFloat(document.getElementById('laborCost').value) || 0,
+                    estimatedHarvest: parseFloat(document.getElementById('estimatedHarvest').value) || 0,
+                    pricePerKg: parseFloat(document.getElementById('pricePerKg').value) || 0
+                };
+                
+                // Validate
+                if (formData.landArea <= 0) {
+                    alert('Luas lahan harus lebih dari 0');
+                    return;
+                }
+                
+                // Check if calculator exists
+                if (!calculator || typeof calculator.calculate !== 'function') {
+                    alert('Kalkulator tidak tersedia!');
+                    return;
+                }
+                
+                // Calculate
+                currentCalculation = calculator.calculate(formData);
+                
+                // Display results
+                displayResults(currentCalculation);
+                
+            } catch (error) {
+                console.error('Calculation error:', error);
+                alert('Terjadi kesalahan saat menghitung: ' + error.message);
+            }
+        }
+        
+        // Display results
+        function displayResults(result) {
+            // Format currency
+            const formatCurrency = (amount) => {
+                return 'Rp ' + amount.toLocaleString('id-ID');
+            };
+            
+            // Update result cards
+            const totalCostElement = document.getElementById('totalCost');
+            const totalRevenueElement = document.getElementById('totalRevenue');
+            const profitElement = document.getElementById('profit');
+            const roiElement = document.getElementById('roi');
+            
+            if (totalCostElement) totalCostElement.textContent = formatCurrency(result.totalCost);
+            if (totalRevenueElement) totalRevenueElement.textContent = formatCurrency(result.totalRevenue);
+            if (profitElement) {
+                profitElement.textContent = formatCurrency(result.profit);
+                profitElement.className = result.profit >= 0 ? 'result-value profit' : 'result-value loss';
+            }
+            if (roiElement) {
+                roiElement.textContent = result.roi + '%';
+                roiElement.className = result.roi >= 0 ? 'result-value profit' : 'result-value loss';
+            }
+            
+            // Show results card
+            const resultsCard = document.getElementById('resultsCard');
+            if (resultsCard) resultsCard.style.display = 'block';
+            
+            // Create chart
+            createChart(result);
+        }
+        
+        // Create simple chart
+        function createChart(result) {
+            const chartContainer = document.getElementById('profitChart');
+            if (!chartContainer) return;
+            
+            const chartData = [
+                { label: 'Total Modal', value: result.totalCost, color: '#ef4444' },
+                { label: 'Total Pendapatan', value: result.totalRevenue, color: '#10b981' },
+                { label: 'Keuntungan', value: result.profit, color: result.profit >= 0 ? '#059669' : '#dc2626' }
+            ];
+            
+            // Find max value for scaling
+            const maxValue = Math.max(...chartData.map(d => Math.abs(d.value)));
+            
+            let chartHTML = '<div class="chart-bars">';
+            
+            chartData.forEach(data => {
+                const percentage = maxValue > 0 ? (Math.abs(data.value) / maxValue) * 100 : 0;
+                chartHTML += `
+                    <div class="chart-item">
+                        <div class="chart-label">
+                            <span class="chart-color" style="background: ${data.color}"></span>
+                            <span>${data.label}</span>
+                        </div>
+                        <div class="chart-bar-container">
+                            <div class="chart-bar" style="width: ${percentage}%; background: ${data.color}"></div>
+                            <span class="chart-value">Rp ${Math.abs(data.value).toLocaleString('id-ID')}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            chartHTML += '</div>';
+            
+            chartContainer.innerHTML = chartHTML;
+        }
+        
+        // Save simulation
+        function saveSimulation() {
+            if (!currentCalculation || !currentUser) {
+                alert('Harap hitung simulasi terlebih dahulu!');
+                return;
+            }
+            
+            // Use the database from included scripts
+            const db = window.AgroDB || window.db;
+            
+            if (!db || typeof db.addSimulation !== 'function') {
+                alert('Database tidak tersedia. Tidak dapat menyimpan simulasi.');
+                return;
+            }
+            
+            // Add user ID to calculation
+            const simulationData = {
+                ...currentCalculation,
+                userId: currentUser.id,
+                createdAt: new Date().toISOString()
+            };
+            
+            // Save to database
+            const saved = db.addSimulation(simulationData);
+            
+            if (!saved) {
+                alert('Gagal menyimpan simulasi.');
+                return;
+            }
+            
+            // Update user points if function exists
+            if (db.updateUserPoints && typeof db.updateUserPoints === 'function') {
+                db.updateUserPoints(currentUser.id, 10);
+            }
+            
+            // Refresh current user data
+            currentUser = authSystem.getCurrentUser ? authSystem.getCurrentUser() : currentUser;
+            
+            // Update sidebar info
+            updateUserInfo();
+            
+            // Show success message
+            alert('✅ Simulasi berhasil disimpan! +10 Poin');
+            
+            // Optionally redirect to dashboard after 2 seconds
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 2000);
+        }
+        
+        // Export to PDF
+        function exportToPDF() {
+            if (!currentCalculation) {
+                alert('Harap hitung simulasi terlebih dahulu!');
+                return;
+            }
+            
+            alert('Fitur export PDF sedang dalam pengembangan.');
+        }
+        
+        // Reset form
+        function resetForm() {
+            const landAreaInput = document.getElementById('landArea');
+            const seedCostInput = document.getElementById('seedCost');
+            const fertilizerCostInput = document.getElementById('fertilizerCost');
+            const laborCostInput = document.getElementById('laborCost');
+            const harvestInput = document.getElementById('estimatedHarvest');
+            const priceInput = document.getElementById('pricePerKg');
+            
+            if (landAreaInput) landAreaInput.value = 1;
+            if (seedCostInput) seedCostInput.value = 2000000;
+            if (fertilizerCostInput) fertilizerCostInput.value = 1500000;
+            if (laborCostInput) laborCostInput.value = 3000000;
+            if (harvestInput) harvestInput.value = 6000;
+            if (priceInput) priceInput.value = 5000;
+            
+            // Reset unit toggle
+            document.querySelectorAll('.unit-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.unit === 'hektar') {
+                    btn.classList.add('active');
+                }
+            });
+            
+            const unitInput = document.getElementById('unit');
+            if (unitInput) unitInput.value = 'hektar';
+            
+            // Hide results card
+            const resultsCard = document.getElementById('resultsCard');
+            if (resultsCard) resultsCard.style.display = 'none';
+            
+            // Reset current calculation
+            currentCalculation = null;
+            
+            // Update crop defaults
+            updateCropDefaults();
+            
+            alert('Form telah direset ke nilai default.');
+        }
+        
+        // Logout function
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin keluar?')) {
+                if (authSystem && typeof authSystem.logout === 'function') {
+                    authSystem.logout();
+                }
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 500);
+            }
+        }
+    </script>
+</body>
+</html>

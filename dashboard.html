@@ -1,0 +1,372 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AgroProfit</title>
+    <!-- ✅ PERBAIKAN: GANTI dengan 4 file CSS baru -->
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/component.css">
+    <link rel="stylesheet" href="css/page.css">  <!-- ✅ DIPERBAIKI: page.css (bukan pages.css) -->
+    <link rel="stylesheet" href="css/responsive.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="dashboard.html" class="logo">
+                <i class="fas fa-leaf"></i> AgroProfit
+            </a>
+            <div class="nav-links">
+                <a href="dashboard.html" class="active">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <a href="simulation.html">
+                    <i class="fas fa-calculator"></i> Simulasi
+                </a>
+                <a href="#">
+                    <i class="fas fa-history"></i> Riwayat
+                </a>
+                <a href="#">
+                    <i class="fas fa-trophy"></i> Leaderboard
+                </a>
+                <div class="user-menu">
+                    <span class="user-name" id="userName"></span>
+                    <button class="btn-logout" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Keluar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h1>Selamat Datang, <span id="userGreeting"></span>! 👋</h1>
+            <p>Pantau perkembangan simulasi dan capai target pertanian Anda.</p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="userPoints">0</h3>
+                    <p>Total Poin</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="userSimulations">0</h3>
+                    <p>Total Simulasi</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="userLevel">Level 1</h3>
+                    <p>Level Saat Ini</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="nextBadge">5</h3>
+                    <p>Menuju Badge</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Badges Section -->
+        <div class="section">
+            <h2 class="section-title">Badges yang Diperoleh</h2>
+            <div class="badges-container" id="userBadges">
+                <!-- Badges akan dimuat di sini -->
+            </div>
+        </div>
+
+        <!-- Recent Simulations -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Simulasi Terbaru</h2>
+                <a href="simulation.html" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Buat Simulasi Baru
+                </a>
+            </div>
+            
+            <div class="simulations-list" id="recentSimulations">
+                <!-- Simulations akan dimuat di sini -->
+            </div>
+            
+            <div class="empty-state" id="emptySimulations" style="display: none;">
+                <i class="fas fa-calculator"></i>
+                <h3>Belum Ada Simulasi</h3>
+                <p>Mulai dengan membuat simulasi pertama Anda</p>
+                <a href="simulation.html" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Buat Simulasi Pertama
+                </a>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="section">
+            <h2 class="section-title">Aksi Cepat</h2>
+            <div class="actions-grid">
+                <a href="simulation.html" class="action-card">
+                    <i class="fas fa-calculator"></i>
+                    <h3>Buat Simulasi</h3>
+                    <p>Hitung keuntungan baru</p>
+                </a>
+                
+                <a href="#" class="action-card">
+                    <i class="fas fa-history"></i>
+                    <h3>Riwayat</h3>
+                    <p>Lihat semua simulasi</p>
+                </a>
+                
+                <a href="#" class="action-card">
+                    <i class="fas fa-chart-bar"></i>
+                    <h3>Analisis</h3>
+                    <p>Analisis tren keuntungan</p>
+                </a>
+                
+                <a href="#" class="action-card">
+                    <i class="fas fa-file-export"></i>
+                    <h3>Export Data</h3>
+                    <p>Export data simulasi</p>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ PERBAIKAN: Tambahkan js/ di depan semua script -->
+    <script src="js/db.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    
+    <script>
+        // ✅ PERBAIKAN: Gunakan instance dari auth.js, jangan buat baru
+        let authSystem = window.Auth;
+        
+        // Jika belum ada instance global, cek apakah class AuthSystem ada
+        if (!authSystem && typeof AuthSystem !== 'undefined') {
+            authSystem = new AuthSystem();
+            window.Auth = authSystem; // Simpan sebagai global
+        }
+        
+        let currentUser = null;
+        
+        // DOM Ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Dashboard page loaded');
+            
+            // ✅ PERBAIKAN: Cek apakah authSystem ada sebelum digunakan
+            if (!authSystem) {
+                console.error('AuthSystem tidak ditemukan!');
+                alert('Sistem autentikasi tidak tersedia. Redirect ke login...');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Check authentication
+            if (authSystem.requireAuth && !authSystem.requireAuth()) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Get current user
+            currentUser = authSystem.getCurrentUser ? authSystem.getCurrentUser() : null;
+            
+            if (!currentUser) {
+                console.log('User tidak ditemukan, redirect ke login');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Update user info in navbar
+            const userNameElement = document.getElementById('userName');
+            if (userNameElement) userNameElement.textContent = currentUser.name;
+            
+            const userGreetingElement = document.getElementById('userGreeting');
+            if (userGreetingElement) {
+                const firstName = currentUser.name.split(' ')[0];
+                userGreetingElement.textContent = firstName;
+            }
+            
+            // Load dashboard data
+            loadDashboardData(currentUser);
+        });
+        
+        // Load dashboard data
+        function loadDashboardData(user) {
+            if (!user) return;
+            
+            // Update statistics dengan error handling
+            const userPointsElement = document.getElementById('userPoints');
+            const userSimulationsElement = document.getElementById('userSimulations');
+            const userLevelElement = document.getElementById('userLevel');
+            const nextBadgeElement = document.getElementById('nextBadge');
+            
+            if (userPointsElement) userPointsElement.textContent = (user.points || 0).toLocaleString('id-ID');
+            if (userSimulationsElement) userSimulationsElement.textContent = user.simulationsCount || 0;
+            if (userLevelElement) userLevelElement.textContent = `Level ${user.level || 1}`;
+            
+            // Calculate next badge
+            const simCount = user.simulationsCount || 0;
+            const nextBadge = simCount < 5 ? 5 - simCount :
+                             simCount < 15 ? 15 - simCount :
+                             simCount < 50 ? 50 - simCount : 0;
+            
+            if (nextBadgeElement) {
+                nextBadgeElement.textContent = nextBadge > 0 ? nextBadge : '🎉';
+            }
+            
+            // Load badges
+            loadBadges(user);
+            
+            // Load recent simulations
+            loadRecentSimulations(user.id);
+        }
+        
+        // Load badges
+        function loadBadges(user) {
+            const badgesContainer = document.getElementById('userBadges');
+            if (!badgesContainer) return;
+            
+            // Jika user tidak punya badges atau belum ada properti badges
+            if (!user.badges || user.badges.length === 0) {
+                badgesContainer.innerHTML = '<p class="text-muted">Belum ada badge yang diperoleh</p>';
+                return;
+            }
+            
+            let badgesHTML = '';
+            user.badges.forEach(badge => {
+                badgesHTML += `
+                    <div class="badge">
+                        <span class="badge-icon">${badge.icon || '🏆'}</span>
+                        <span class="badge-name">${badge.name || 'Badge'}</span>
+                    </div>
+                `;
+            });
+            
+            badgesContainer.innerHTML = badgesHTML;
+        }
+        
+        // Load recent simulations
+        function loadRecentSimulations(userId) {
+            // Gunakan AgroDB dari js/db.js jika ada
+            const db = window.AgroDB;
+            if (!db) {
+                console.error('Database not found');
+                return;
+            }
+            
+            // Gunakan fungsi getSimulationsByUser jika ada, atau gunakan fallback
+            let simulations = [];
+            if (db.getSimulationsByUser && typeof db.getSimulationsByUser === 'function') {
+                simulations = db.getSimulationsByUser(userId) || [];
+            } else if (db.simulations && Array.isArray(db.simulations)) {
+                // Fallback: filter simulations berdasarkan userId
+                simulations = db.simulations.filter(sim => sim.userId === userId);
+            }
+            
+            const container = document.getElementById('recentSimulations');
+            const emptyState = document.getElementById('emptySimulations');
+            
+            if (!simulations || simulations.length === 0) {
+                if (container) container.style.display = 'none';
+                if (emptyState) emptyState.style.display = 'block';
+                return;
+            }
+            
+            if (emptyState) emptyState.style.display = 'none';
+            if (container) container.style.display = 'block';
+            
+            let simulationsHTML = '';
+            // Ambil 5 simulasi terbaru
+            const recentSims = simulations.slice(0, 5);
+            
+            recentSims.forEach(sim => {
+                const profit = sim.profit || 0;
+                const roi = sim.roi || 0;
+                const cropType = sim.cropType || 'Tanaman';
+                const createdAt = sim.createdAt ? new Date(sim.createdAt) : new Date();
+                
+                simulationsHTML += `
+                    <div class="simulation-item">
+                        <div class="simulation-header">
+                            <h4>${cropType}</h4>
+                            <span class="simulation-date">${formatDate(createdAt)}</span>
+                        </div>
+                        <div class="simulation-stats">
+                            <div class="stat">
+                                <span class="stat-label">Keuntungan:</span>
+                                <span class="stat-value ${profit >= 0 ? 'profit' : 'loss'}">
+                                    Rp ${Math.abs(profit).toLocaleString('id-ID')}
+                                </span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">ROI:</span>
+                                <span class="stat-value ${roi >= 0 ? 'profit' : 'loss'}">
+                                    ${roi}%
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            if (container) container.innerHTML = simulationsHTML;
+        }
+        
+        // Logout function
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin keluar?')) {
+                if (authSystem && typeof authSystem.logout === 'function') {
+                    authSystem.logout();
+                }
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 500);
+            }
+        }
+        
+        // Helper functions
+        function formatDate(date) {
+            if (!date) return '-';
+            return date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            });
+        }
+        
+        function getUserInitials(name) {
+            if (!name) return '??';
+            return name.split(' ')
+                .map(word => word.charAt(0))
+                .join('')
+                .toUpperCase()
+                .substring(0, 2);
+        }
+    </script>
+</body>
+</html>
+

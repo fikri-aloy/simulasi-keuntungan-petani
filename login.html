@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AgroProfit</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/component.css">
+    <link rel="stylesheet" href="css/page.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="auth-page">
+    <div class="auth-container">
+        <!-- Header -->
+        <div class="auth-header">
+            <a href="index.html" class="back-home">
+                <i class="fas fa-arrow-left"></i> Kembali
+            </a>
+            <div class="logo">
+                <i class="fas fa-leaf"></i> AgroProfit
+            </div>
+        </div>
+
+        <!-- Auth Card -->
+        <div class="auth-card">
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form" onsubmit="event.preventDefault(); login();">
+                <h2>Masuk ke Akun Anda</h2>
+                <p class="auth-subtitle">Selamat datang kembali! Masuk untuk melanjutkan.</p>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" placeholder="email@contoh.com" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-group password-input">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" placeholder="Masukkan password" required>
+                        <button type="button" class="toggle-password" onclick="togglePassword('password')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-options">
+                    <label class="checkbox-group">
+                        <input type="checkbox" id="remember">
+                        <span>Ingat saya</span>
+                    </label>
+                    <a href="#" class="forgot-link">Lupa password?</a>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-sign-in-alt"></i> Masuk
+                </button>
+                
+                <div class="demo-login">
+                    <p>Atau gunakan akun demo:</p>
+                    <button type="button" class="btn btn-outline btn-block" onclick="useDemoAccount()">
+                        <i class="fas fa-user-circle"></i> Login sebagai Demo User
+                    </button>
+                </div>
+                
+                <div class="auth-switch">
+                    <p>Belum punya akun? <a href="#" onclick="showRegisterForm()">Daftar di sini</a></p>
+                </div>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" class="auth-form" style="display: none;" onsubmit="event.preventDefault(); register();">
+                <h2>Daftar Akun Baru</h2>
+                <p class="auth-subtitle">Bergabunglah dengan komunitas petani modern.</p>
+                
+                <div class="form-group">
+                    <label for="regName">Nama Lengkap</label>
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="regName" placeholder="Nama Anda" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regEmail">Email</label>
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="regEmail" placeholder="email@contoh.com" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regPassword">Password</label>
+                    <div class="input-group password-input">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="regPassword" placeholder="Minimal 6 karakter" required minlength="6">
+                        <button type="button" class="toggle-password" onclick="togglePassword('regPassword')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regConfirm">Konfirmasi Password</label>
+                    <div class="input-group password-input">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="regConfirm" placeholder="Ulangi password" required>
+                        <button type="button" class="toggle-password" onclick="togglePassword('regConfirm')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-group">
+                        <input type="checkbox" id="agreeTerms" required>
+                        <span>Saya setuju dengan <a href="#" class="terms-link">Syarat & Ketentuan</a></span>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-user-plus"></i> Daftar Sekarang
+                </button>
+                
+                <div class="auth-switch">
+                    <p>Sudah punya akun? <a href="#" onclick="showLoginForm()">Masuk di sini</a></p>
+                </div>
+            </form>
+
+            <!-- Message Alert -->
+            <div id="authMessage" class="message"></div>
+        </div>
+    </div>
+
+    <!-- ✅ PERBAIKAN: Tambahkan js/ di depan -->
+    <script src="js/db.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    
+    <script>
+        // ✅ Gunakan instance dari auth.js (window.Auth)
+        let authSystem = window.Auth;
+        
+        // Jika belum ada, buat instance baru
+        if (!authSystem && typeof AuthSystem !== 'undefined') {
+            authSystem = new AuthSystem();
+        }
+        
+        // DOM Ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Login page loaded');
+            
+            // Check if user is already logged in
+            if (authSystem && authSystem.isAuthenticated && authSystem.isAuthenticated()) {
+                window.location.href = 'dashboard.html';
+                return;
+            }
+            
+            // Check URL parameter for action
+            const urlParams = new URLSearchParams(window.location.search);
+            const action = urlParams.get('action');
+            
+            if (action === 'register') {
+                showRegisterForm();
+            }
+            
+            // Auto-fill demo account if exists
+            const emailField = document.getElementById('email');
+            const passwordField = document.getElementById('password');
+            if (emailField && passwordField) {
+                emailField.value = 'demo@agroprofit.com';
+                passwordField.value = 'demo123';
+            }
+        });
+        
+        // Show register form
+        function showRegisterForm() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            
+            if (loginForm) loginForm.style.display = 'none';
+            if (registerForm) registerForm.style.display = 'block';
+        }
+        
+        // Show login form
+        function showLoginForm() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            
+            if (registerForm) registerForm.style.display = 'none';
+            if (loginForm) loginForm.style.display = 'block';
+        }
+        
+        // Use demo account
+        function useDemoAccount() {
+            const emailField = document.getElementById('email');
+            const passwordField = document.getElementById('password');
+            
+            if (emailField && passwordField) {
+                emailField.value = 'demo@agroprofit.com';
+                passwordField.value = 'demo123';
+            }
+            
+            login();
+        }
+        
+        // Toggle password visibility
+        function togglePassword(fieldId) {
+            const input = document.getElementById(fieldId);
+            if (!input) return;
+            
+            const icon = input.parentElement.querySelector('.toggle-password i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                if (icon) icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                if (icon) icon.className = 'fas fa-eye';
+            }
+        }
+        
+        // Show message
+        function showMessage(text, type = 'success') {
+            const messageDiv = document.getElementById('authMessage');
+            if (!messageDiv) return;
+            
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Login function
+        function login() {
+            const email = document.getElementById('email')?.value.trim();
+            const password = document.getElementById('password')?.value;
+
+            if (!email || !password) {
+                showMessage('Email dan password harus diisi', 'error');
+                return;
+            }
+            
+            // Check if authSystem exists and has login method
+            if (!authSystem || typeof authSystem.login !== 'function') {
+                showMessage('Sistem autentikasi tidak tersedia', 'error');
+                return;
+            }
+
+            const result = authSystem.login(email, password);
+            
+            if (result && result.success) {
+                showMessage('Login berhasil! Mengarahkan...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+            } else {
+                showMessage(result?.message || 'Login gagal', 'error');
+            }
+        }
+        
+        // Register function
+        function register() {
+            const name = document.getElementById('regName')?.value.trim();
+            const email = document.getElementById('regEmail')?.value.trim();
+            const password = document.getElementById('regPassword')?.value;
+            const confirmPassword = document.getElementById('regConfirm')?.value;
+            const agreeTerms = document.getElementById('agreeTerms')?.checked;
+
+            if (!name || !email || !password || !confirmPassword) {
+                showMessage('Semua field harus diisi', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showMessage('Password minimal 6 karakter', 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showMessage('Password tidak cocok', 'error');
+                return;
+            }
+
+            if (!agreeTerms) {
+                showMessage('Anda harus menyetujui Syarat & Ketentuan', 'error');
+                return;
+            }
+            
+            // Check if authSystem exists and has register method
+            if (!authSystem || typeof authSystem.register !== 'function') {
+                showMessage('Sistem autentikasi tidak tersedia', 'error');
+                return;
+            }
+
+            const result = authSystem.register(name, email, password);
+            
+            if (result && result.success) {
+                showMessage('Pendaftaran berhasil! Mengarahkan...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+            } else {
+                showMessage(result?.message || 'Pendaftaran gagal', 'error');
+            }
+        }
+        
+        // Helper functions
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        function validatePassword(password) {
+            if (password.length < 6) {
+                return { valid: false, message: 'Password minimal 6 karakter' };
+            }
+            return { valid: true };
+        }
+    </script>
+</body>
+</html>

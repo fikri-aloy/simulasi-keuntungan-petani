@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroProfit - Simulasi Keuntungan Pertanian</title>
+    <!-- CSS YANG BENAR SESUAI STRUKTUR FOLDER ANDA -->
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/component.css">    <!-- DIPERBAIKI: component.css (tanpa "s") -->
+    <link rel="stylesheet" href="css/page.css">         <!-- DIPERBAIKI: page.css (tanpa "s") -->
+    <link rel="stylesheet" href="css/responsive.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-leaf"></i> AgroProfit
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="active">Beranda</a>
+                <a href="#features">Fitur</a>
+                <a href="#about">Tentang</a>
+                <a href="login.html" class="btn-login">Masuk</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Simulasi Keuntungan Pertanian yang <span class="highlight">Akurat</span></h1>
+                <p>Hitung perkiraan keuntungan, optimalkan biaya produksi, dan pantau perkembangan usaha pertanian Anda dengan mudah.</p>
+                <div class="hero-buttons">
+                    <a href="login.html?action=register" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Daftar Gratis
+                    </a>
+                    <a href="login.html" class="btn btn-outline">
+                        <i class="fas fa-sign-in-alt"></i> Masuk
+                    </a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="simulation-preview">
+                    <div class="preview-header">
+                        <div class="preview-dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <span class="preview-label">Simulasi Preview</span>
+                    </div>
+                    <div class="preview-body">
+                        <div class="preview-item">
+                            <span>Padi Sawah</span>
+                            <span class="profit">+Rp 12.450.000</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 75%"></div>
+                        </div>
+                        <div class="preview-stats">
+                            <div class="stat">
+                                <p class="stat-label">ROI</p>
+                                <p class="stat-value">45%</p>
+                            </div>
+                            <div class="stat">
+                                <p class="stat-label">Keuntungan</p>
+                                <p class="stat-value">Rp 8.2 Jt</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Fitur Unggulan</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <h3>Simulasi Akurat</h3>
+                    <p>Hitung keuntungan dengan parameter lengkap dan real-time</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h3>Sistem Gamifikasi</h3>
+                    <p>Dapatkan badge dan level up dengan setiap simulasi</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Analisis ROI</h3>
+                    <p>Analisis Return on Investment untuk setiap jenis tanaman</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <h3>Riwayat Lengkap</h3>
+                    <p>Simpan dan analisis semua simulasi sebelumnya</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title">Tentang AgroProfit</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>AgroProfit adalah platform simulasi keuntungan pertanian yang dirancang khusus untuk membantu petani Indonesia menghitung perkiraan keuntungan dengan mudah dan akurat.</p>
+                    <p>Dengan fitur-fitur modern dan antarmuka yang user-friendly, petani dapat melakukan perencanaan usaha tani yang lebih baik.</p>
+                </div>
+                <div class="about-stats">
+                    <div class="stat">
+                        <h3>1000+</h3>
+                        <p>Pengguna</p>
+                    </div>
+                    <div class="stat">
+                        <h3>5000+</h3>
+                        <p>Simulasi</p>
+                    </div>
+                    <div class="stat">
+                        <h3>95%</h3>
+                        <p>Akurasi</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 AgroProfit. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JS YANG BENAR SESUAI STRUKTUR FOLDER ANDA -->
+    <script src="js/main.js"></script>    <!-- DIPERBAIKI: dari script.js ke js/main.js -->
+</body>
+</html>
