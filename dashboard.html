@@ -1,19 +1,481 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - AgroProfit</title>
-    <!-- ✅ PERBAIKAN: GANTI dengan 4 file CSS baru -->
+    <!-- CSS -->
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/component.css">
-    <link rel="stylesheet" href="css/page.css">  <!-- ✅ DIPERBAIKI: page.css (bukan pages.css) -->
+    <link rel="stylesheet" href="css/page.css">
     <link rel="stylesheet" href="css/responsive.css">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ========== CUSTOM STYLES FOR DASHBOARD ========== */
+        
+        /* Background dengan gradient alam */
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Background pattern alam */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path fill="%2328a745" opacity="0.1" d="M0,0 L100,0 L100,100 L0,100 Z"/><path fill="none" stroke="%2328a745" stroke-width="0.5" opacity="0.2" d="M50,0 L50,100 M0,50 L100,50"/><circle cx="20" cy="20" r="2" fill="%2328a745" opacity="0.3"/><circle cx="80" cy="30" r="3" fill="%2328a745" opacity="0.3"/><circle cx="40" cy="80" r="2" fill="%2328a745" opacity="0.3"/></svg>');
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        /* Navbar dengan efek glassmorphism */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1000;
+        }
+        
+        /* Hero Section dengan gambar alam */
+        .hero-section {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 20px 0 30px;
+            height: 300px;
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
+                        url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') center/cover no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            padding: 40px;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+        }
+        
+        .hero-content h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .hero-content p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 25px;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+        }
+        
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .hero-stat {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(5px);
+            border-radius: 12px;
+            padding: 15px 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .hero-stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .hero-stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        /* Container dengan efek glass */
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 30px;
+            margin: 30px auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Stat cards yang lebih menarik */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 16px;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #28a745, #20c997);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .stat-content h3 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+        
+        .stat-content p {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        /* Section styling */
+        .section {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 18px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f3f5;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(#28a745, #20c997);
+            border-radius: 2px;
+        }
+        
+        /* Badges container */
+        .badges-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding: 15px;
+            background: rgba(248, 249, 250, 0.5);
+            border-radius: 12px;
+            border: 1px dashed #dee2e6;
+            min-height: 80px;
+        }
+        
+        .badge {
+            background: linear-gradient(135deg, #fff, #f8f9fa);
+            border-radius: 12px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .badge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .badge-icon {
+            font-size: 2rem;
+        }
+        
+        .badge-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        /* Simulations list */
+        .simulations-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .simulation-item {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            border-left: 5px solid #28a745;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid #f1f3f5;
+        }
+        
+        .simulation-item:hover {
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .simulation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .simulation-header h4 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 1.1rem;
+        }
+        
+        .simulation-date {
+            color: #6c757d;
+            font-size: 0.9rem;
+            background: #f8f9fa;
+            padding: 5px 12px;
+            border-radius: 20px;
+        }
+        
+        .simulation-stats {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .stat-value.profit {
+            color: #28a745;
+            font-weight: 600;
+        }
+        
+        .stat-value.loss {
+            color: #dc3545;
+            font-weight: 600;
+        }
+        
+        /* Actions grid */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .action-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #28a745, #20c997);
+        }
+        
+        .action-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+            color: inherit;
+        }
+        
+        .action-card i {
+            font-size: 3rem;
+            color: #28a745;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .action-card h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .action-card p {
+            color: #6c757d;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 30px;
+            background: rgba(248, 249, 250, 0.5);
+            border-radius: 16px;
+            border: 2px dashed #dee2e6;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: #adb5bd;
+            margin-bottom: 20px;
+        }
+        
+        /* Floating elements */
+        .floating-element {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            z-index: -1;
+        }
+        
+        .floating-1 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, #28a745, transparent);
+            top: -150px;
+            right: -150px;
+        }
+        
+        .floating-2 {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, #20c997, transparent);
+            bottom: -100px;
+            left: -100px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .hero-section {
+                height: 250px;
+                padding: 20px;
+            }
+            
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+            
+            .hero-stats {
+                gap: 15px;
+            }
+            
+            .hero-stat {
+                padding: 10px 15px;
+            }
+            
+            .stat-card {
+                padding: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+            }
+            
+            .actions-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+            }
+            
+            .simulation-stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero-section {
+                height: 200px;
+            }
+            
+            .hero-content h1 {
+                font-size: 1.6rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Floating background elements -->
+    <div class="floating-element floating-1"></div>
+    <div class="floating-element floating-2"></div>
+
     <!-- Navigation -->
     <nav class="navbar">
         <div class="container">
@@ -45,10 +507,27 @@
 
     <!-- Main Content -->
     <div class="container">
-        <!-- Welcome Section -->
-        <div class="welcome-section">
-            <h1>Selamat Datang, <span id="userGreeting"></span>! 👋</h1>
-            <p>Pantau perkembangan simulasi dan capai target pertanian Anda.</p>
+        <!-- Hero Section dengan gambar alam -->
+        <div class="hero-section">
+            <div class="hero-content">
+                <h1>Selamat Datang, <span id="userGreeting"></span>! 👋</h1>
+                <p>Optimalkan usaha tani Anda dengan analisis cerdas dan perhitungan akurat</p>
+                
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <span class="hero-stat-value" id="heroPoints">0</span>
+                        <span class="hero-stat-label">Total Poin</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-value" id="heroSimulations">0</span>
+                        <span class="hero-stat-label">Simulasi</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-value" id="heroLevel">Level 1</span>
+                        <span class="hero-stat-label">Level</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Stats Grid -->
@@ -96,7 +575,7 @@
 
         <!-- Badges Section -->
         <div class="section">
-            <h2 class="section-title">Badges yang Diperoleh</h2>
+            <h2 class="section-title">🏆 Badges yang Diperoleh</h2>
             <div class="badges-container" id="userBadges">
                 <!-- Badges akan dimuat di sini -->
             </div>
@@ -104,9 +583,9 @@
 
         <!-- Recent Simulations -->
         <div class="section">
-            <div class="section-header">
-                <h2 class="section-title">Simulasi Terbaru</h2>
-                <a href="simulation.html" class="btn btn-primary">
+            <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h2 class="section-title">📊 Simulasi Terbaru</h2>
+                <a href="simulation.html" class="btn btn-primary" style="background: linear-gradient(135deg, #28a745, #20c997); border: none; padding: 12px 24px; border-radius: 10px; color: white; text-decoration: none; display: flex; align-items: center; gap: 8px; font-weight: 600;">
                     <i class="fas fa-plus"></i> Buat Simulasi Baru
                 </a>
             </div>
@@ -119,7 +598,7 @@
                 <i class="fas fa-calculator"></i>
                 <h3>Belum Ada Simulasi</h3>
                 <p>Mulai dengan membuat simulasi pertama Anda</p>
-                <a href="simulation.html" class="btn btn-primary">
+                <a href="simulation.html" class="btn btn-primary" style="background: linear-gradient(135deg, #28a745, #20c997); border: none; padding: 12px 24px; border-radius: 10px; color: white; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; margin-top: 15px;">
                     <i class="fas fa-plus"></i> Buat Simulasi Pertama
                 </a>
             </div>
@@ -127,57 +606,53 @@
 
         <!-- Quick Actions -->
         <div class="section">
-            <h2 class="section-title">Aksi Cepat</h2>
+            <h2 class="section-title">⚡ Aksi Cepat</h2>
             <div class="actions-grid">
                 <a href="simulation.html" class="action-card">
                     <i class="fas fa-calculator"></i>
                     <h3>Buat Simulasi</h3>
-                    <p>Hitung keuntungan baru</p>
+                    <p>Hitung keuntungan baru dengan parameter lengkap</p>
                 </a>
                 
                 <a href="#" class="action-card">
                     <i class="fas fa-history"></i>
-                    <h3>Riwayat</h3>
-                    <p>Lihat semua simulasi</p>
+                    <h3>Riwayat Simulasi</h3>
+                    <p>Lihat semua simulasi yang pernah dibuat</p>
                 </a>
                 
                 <a href="#" class="action-card">
                     <i class="fas fa-chart-bar"></i>
-                    <h3>Analisis</h3>
-                    <p>Analisis tren keuntungan</p>
+                    <h3>Analisis Tren</h3>
+                    <p>Analisis perkembangan usaha tani Anda</p>
                 </a>
                 
                 <a href="#" class="action-card">
                     <i class="fas fa-file-export"></i>
                     <h3>Export Data</h3>
-                    <p>Export data simulasi</p>
+                    <p>Export data simulasi dalam format PDF/Excel</p>
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- ✅ PERBAIKAN: Tambahkan js/ di depan semua script -->
+    <!-- Scripts -->
     <script src="js/db.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/main.js"></script>
     
     <script>
-        // ✅ PERBAIKAN: Gunakan instance dari auth.js, jangan buat baru
         let authSystem = window.Auth;
         
-        // Jika belum ada instance global, cek apakah class AuthSystem ada
         if (!authSystem && typeof AuthSystem !== 'undefined') {
             authSystem = new AuthSystem();
-            window.Auth = authSystem; // Simpan sebagai global
+            window.Auth = authSystem;
         }
         
         let currentUser = null;
         
-        // DOM Ready
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Dashboard page loaded');
             
-            // ✅ PERBAIKAN: Cek apakah authSystem ada sebelum digunakan
             if (!authSystem) {
                 console.error('AuthSystem tidak ditemukan!');
                 alert('Sistem autentikasi tidak tersedia. Redirect ke login...');
@@ -185,13 +660,11 @@
                 return;
             }
             
-            // Check authentication
             if (authSystem.requireAuth && !authSystem.requireAuth()) {
                 window.location.href = 'login.html';
                 return;
             }
             
-            // Get current user
             currentUser = authSystem.getCurrentUser ? authSystem.getCurrentUser() : null;
             
             if (!currentUser) {
@@ -212,27 +685,45 @@
             
             // Load dashboard data
             loadDashboardData(currentUser);
+            
+            // Add animation to stats cards on load
+            setTimeout(() => {
+                const statCards = document.querySelectorAll('.stat-card');
+                statCards.forEach((card, index) => {
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, index * 100);
+                });
+            }, 300);
         });
         
-        // Load dashboard data
         function loadDashboardData(user) {
             if (!user) return;
             
-            // Update statistics dengan error handling
+            // Update statistics
             const userPointsElement = document.getElementById('userPoints');
             const userSimulationsElement = document.getElementById('userSimulations');
             const userLevelElement = document.getElementById('userLevel');
             const nextBadgeElement = document.getElementById('nextBadge');
             
+            const heroPoints = document.getElementById('heroPoints');
+            const heroSimulations = document.getElementById('heroSimulations');
+            const heroLevel = document.getElementById('heroLevel');
+            
             if (userPointsElement) userPointsElement.textContent = (user.points || 0).toLocaleString('id-ID');
             if (userSimulationsElement) userSimulationsElement.textContent = user.simulationsCount || 0;
             if (userLevelElement) userLevelElement.textContent = `Level ${user.level || 1}`;
             
+            if (heroPoints) heroPoints.textContent = (user.points || 0).toLocaleString('id-ID');
+            if (heroSimulations) heroSimulations.textContent = user.simulationsCount || 0;
+            if (heroLevel) heroLevel.textContent = `Level ${user.level || 1}`;
+            
             // Calculate next badge
             const simCount = user.simulationsCount || 0;
-            const nextBadge = simCount < 5 ? 5 - simCount :
-                             simCount < 15 ? 15 - simCount :
-                             simCount < 50 ? 50 - simCount : 0;
+            let nextBadge = simCount < 5 ? 5 - simCount :
+                           simCount < 15 ? 15 - simCount :
+                           simCount < 50 ? 50 - simCount : 0;
             
             if (nextBadgeElement) {
                 nextBadgeElement.textContent = nextBadge > 0 ? nextBadge : '🎉';
@@ -243,25 +734,38 @@
             
             // Load recent simulations
             loadRecentSimulations(user.id);
+            
+            // Animate number counters
+            animateCounter(userPointsElement, 0, user.points || 0, 1500);
+            animateCounter(userSimulationsElement, 0, user.simulationsCount || 0, 1500);
         }
         
-        // Load badges
         function loadBadges(user) {
             const badgesContainer = document.getElementById('userBadges');
             if (!badgesContainer) return;
             
-            // Jika user tidak punya badges atau belum ada properti badges
             if (!user.badges || user.badges.length === 0) {
-                badgesContainer.innerHTML = '<p class="text-muted">Belum ada badge yang diperoleh</p>';
+                badgesContainer.innerHTML = `
+                    <div style="text-align: center; width: 100%; padding: 20px; color: #6c757d;">
+                        <i class="fas fa-medal" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                        <p>Belum ada badge yang diperoleh</p>
+                        <small>Buat 5 simulasi untuk mendapatkan badge pertama!</small>
+                    </div>
+                `;
                 return;
             }
             
             let badgesHTML = '';
-            user.badges.forEach(badge => {
+            user.badges.forEach((badge, index) => {
                 badgesHTML += `
-                    <div class="badge">
+                    <div class="badge" style="animation-delay: ${index * 0.1}s;">
                         <span class="badge-icon">${badge.icon || '🏆'}</span>
-                        <span class="badge-name">${badge.name || 'Badge'}</span>
+                        <div>
+                            <span class="badge-name">${badge.name || 'Badge'}</span>
+                            <div style="font-size: 0.8rem; color: #6c757d; margin-top: 5px;">
+                                ${badge.description || 'Prestasi petani'}
+                            </div>
+                        </div>
                     </div>
                 `;
             });
@@ -269,21 +773,17 @@
             badgesContainer.innerHTML = badgesHTML;
         }
         
-        // Load recent simulations
         function loadRecentSimulations(userId) {
-            // Gunakan AgroDB dari js/db.js jika ada
             const db = window.AgroDB;
             if (!db) {
                 console.error('Database not found');
                 return;
             }
             
-            // Gunakan fungsi getSimulationsByUser jika ada, atau gunakan fallback
             let simulations = [];
             if (db.getSimulationsByUser && typeof db.getSimulationsByUser === 'function') {
                 simulations = db.getSimulationsByUser(userId) || [];
             } else if (db.simulations && Array.isArray(db.simulations)) {
-                // Fallback: filter simulations berdasarkan userId
                 simulations = db.simulations.filter(sim => sim.userId === userId);
             }
             
@@ -300,19 +800,19 @@
             if (container) container.style.display = 'block';
             
             let simulationsHTML = '';
-            // Ambil 5 simulasi terbaru
             const recentSims = simulations.slice(0, 5);
             
-            recentSims.forEach(sim => {
+            recentSims.forEach((sim, index) => {
                 const profit = sim.profit || 0;
                 const roi = sim.roi || 0;
                 const cropType = sim.cropType || 'Tanaman';
+                const cropName = sim.cropName || cropType;
                 const createdAt = sim.createdAt ? new Date(sim.createdAt) : new Date();
                 
                 simulationsHTML += `
-                    <div class="simulation-item">
+                    <div class="simulation-item" style="animation-delay: ${index * 0.1}s;">
                         <div class="simulation-header">
-                            <h4>${cropType}</h4>
+                            <h4>${cropName}</h4>
                             <span class="simulation-date">${formatDate(createdAt)}</span>
                         </div>
                         <div class="simulation-stats">
@@ -325,7 +825,7 @@
                             <div class="stat">
                                 <span class="stat-label">ROI:</span>
                                 <span class="stat-value ${roi >= 0 ? 'profit' : 'loss'}">
-                                    ${roi}%
+                                    ${roi.toFixed(2)}%
                                 </span>
                             </div>
                         </div>
@@ -336,7 +836,26 @@
             if (container) container.innerHTML = simulationsHTML;
         }
         
-        // Logout function
+        function animateCounter(element, start, end, duration) {
+            if (!element) return;
+            
+            const startTime = Date.now();
+            const updateCounter = () => {
+                const currentTime = Date.now();
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                const currentValue = Math.floor(start + (end - start) * progress);
+                element.textContent = currentValue.toLocaleString('id-ID');
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateCounter);
+                }
+            };
+            
+            updateCounter();
+        }
+        
         function logout() {
             if (confirm('Apakah Anda yakin ingin keluar?')) {
                 if (authSystem && typeof authSystem.logout === 'function') {
@@ -348,7 +867,6 @@
             }
         }
         
-        // Helper functions
         function formatDate(date) {
             if (!date) return '-';
             return date.toLocaleDateString('id-ID', {
@@ -357,16 +875,6 @@
                 year: 'numeric'
             });
         }
-        
-        function getUserInitials(name) {
-            if (!name) return '??';
-            return name.split(' ')
-                .map(word => word.charAt(0))
-                .join('')
-                .toUpperCase()
-                .substring(0, 2);
-        }
     </script>
 </body>
 </html>
-

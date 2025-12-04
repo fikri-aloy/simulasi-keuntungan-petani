@@ -4,13 +4,128 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulasi - AgroProfit</title>
-    <!-- ✅ PERBAIKAN: GANTI style.css dengan 4 file CSS -->
+    <!-- CSS -->
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/component.css">
     <link rel="stylesheet" href="css/page.css">
     <link rel="stylesheet" href="css/responsive.css">
-    
+    <!-- jsPDF untuk export PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS tambahan untuk format input dengan titik */
+        .formatted-input {
+            position: relative;
+        }
+        
+        .formatted-input input {
+            padding-right: 40px !important;
+            letter-spacing: 0.5px;
+        }
+        
+        .currency-symbol {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #f8f9fa;
+            padding: 8px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #28a745;
+            z-index: 2;
+        }
+        
+        .unit-symbol {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #f8f9fa;
+            padding: 8px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #495057;
+            z-index: 2;
+        }
+        
+        /* Perbaikan layout untuk input dengan icon */
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            z-index: 2;
+        }
+        
+        .input-with-icon input {
+            padding-left: 40px !important;
+        }
+        
+        /* Perbaikan untuk unit toggle */
+        .unit-toggle {
+            display: flex;
+            background: #e9ecef;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-left: 10px;
+            min-width: 100px;
+        }
+        
+        .unit-btn {
+            padding: 8px 12px !important;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+        
+        .unit-btn.active {
+            background: #28a745;
+            color: white;
+        }
+        
+        /* Spasi lebih untuk input number */
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        /* Perbaikan tata letak form */
+        .form-grid {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .form-group {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        
+        /* Pastikan logo dan elemen navbar tidak tumpang tindih */
+        .navbar {
+            z-index: 1000;
+            position: relative;
+        }
+        
+        .container {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation -->
@@ -75,8 +190,11 @@
                             <!-- Land Area -->
                             <div class="form-group">
                                 <label for="landArea">Luas Lahan</label>
-                                <div class="input-with-unit">
-                                    <input type="number" id="landArea" value="1" min="0.01" step="0.01">
+                                <div class="input-with-unit" style="display: flex; align-items: center;">
+                                    <div class="formatted-input" style="flex: 1; position: relative;">
+                                        <input type="text" id="landArea" value="1" placeholder="Contoh: 1,5">
+                                        <span class="unit-symbol" id="areaUnitDisplay">Ha</span>
+                                    </div>
                                     <div class="unit-toggle">
                                         <button type="button" class="unit-btn active" data-unit="hektar">Hektar</button>
                                         <button type="button" class="unit-btn" data-unit="meter">m²</button>
@@ -88,45 +206,45 @@
                             <!-- Seed Cost -->
                             <div class="form-group">
                                 <label for="seedCost">Biaya Bibit (Rp)</label>
-                                <div class="input-with-icon">
-                                    <i class="fas fa-seedling"></i>
-                                    <input type="number" id="seedCost" value="2000000" min="0">
+                                <div class="formatted-input">
+                                    <input type="text" id="seedCost" value="2.000.000" placeholder="Contoh: 2.000.000">
+                                    <span class="currency-symbol">Rp</span>
                                 </div>
                             </div>
                             
                             <!-- Fertilizer Cost -->
                             <div class="form-group">
                                 <label for="fertilizerCost">Biaya Pupuk & Pestisida (Rp)</label>
-                                <div class="input-with-icon">
-                                    <i class="fas fa-prescription-bottle"></i>
-                                    <input type="number" id="fertilizerCost" value="1500000" min="0">
+                                <div class="formatted-input">
+                                    <input type="text" id="fertilizerCost" value="1.500.000" placeholder="Contoh: 1.500.000">
+                                    <span class="currency-symbol">Rp</span>
                                 </div>
                             </div>
                             
                             <!-- Labor Cost -->
                             <div class="form-group">
                                 <label for="laborCost">Biaya Tenaga Kerja (Rp)</label>
-                                <div class="input-with-icon">
-                                    <i class="fas fa-users"></i>
-                                    <input type="number" id="laborCost" value="3000000" min="0">
+                                <div class="formatted-input">
+                                    <input type="text" id="laborCost" value="3.000.000" placeholder="Contoh: 3.000.000">
+                                    <span class="currency-symbol">Rp</span>
                                 </div>
                             </div>
                             
                             <!-- Estimated Harvest -->
                             <div class="form-group">
                                 <label for="estimatedHarvest">Estimasi Hasil Panen (kg)</label>
-                                <div class="input-with-icon">
-                                    <i class="fas fa-weight-hanging"></i>
-                                    <input type="number" id="estimatedHarvest" value="6000" min="0">
+                                <div class="formatted-input">
+                                    <input type="text" id="estimatedHarvest" value="6.000" placeholder="Contoh: 6.000">
+                                    <span class="unit-symbol">kg</span>
                                 </div>
                             </div>
                             
                             <!-- Price per kg -->
                             <div class="form-group">
                                 <label for="pricePerKg">Harga Jual per kg (Rp)</label>
-                                <div class="input-with-icon">
-                                    <i class="fas fa-tag"></i>
-                                    <input type="number" id="pricePerKg" value="5000" min="0">
+                                <div class="formatted-input">
+                                    <input type="text" id="pricePerKg" value="5.000" placeholder="Contoh: 5.000">
+                                    <span class="currency-symbol">Rp</span>
                                 </div>
                             </div>
                         </div>
@@ -181,7 +299,7 @@
                             <button id="saveSimulationBtn" class="btn btn-primary">
                                 <i class="fas fa-save"></i> Simpan Simulasi
                             </button>
-                            <button id="exportPdfBtn" class="btn btn-outline">
+                            <button id="exportPdfBtn" class="btn btn-outline" onclick="exportToPDF()">
                                 <i class="fas fa-file-pdf"></i> Export PDF
                             </button>
                             <button id="resetBtn" class="btn btn-outline">
@@ -275,23 +393,23 @@
         </div>
     </div>
 
-    <!-- ✅ PERBAIKAN: Tambahkan js/ di depan semua script -->
+    <!-- Scripts -->
     <script src="js/db.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/calculator.js"></script>
     <script src="js/main.js"></script>
     
     <script>
-        // ✅ PERBAIKAN: Gunakan instance dari auth.js, jangan buat baru
+        // Gunakan instance dari auth.js
         let authSystem = window.Auth;
         
-        // Jika belum ada instance global, cek apakah class AuthSystem ada
+        // Jika belum ada, buat instance baru
         if (!authSystem && typeof AuthSystem !== 'undefined') {
             authSystem = new AuthSystem();
-            window.Auth = authSystem; // Simpan sebagai global
+            window.Auth = authSystem;
         }
         
-        // ✅ PERBAIKAN: Cek apakah calculator.js sudah dimuat
+        // Cek calculator
         let calculator = window.ProfitCalculator || window.calculator;
         if (!calculator && typeof ProfitCalculator !== 'undefined') {
             calculator = new ProfitCalculator();
@@ -300,11 +418,52 @@
         let currentUser = null;
         let currentCalculation = null;
         
+        // Fungsi untuk memformat angka dengan titik
+        function formatNumberInput(input) {
+            // Hapus semua karakter selain angka dan koma
+            let value = input.value.replace(/[^\d,]/g, '');
+            
+            // Ganti koma dengan titik untuk ribuan
+            value = value.replace(/\./g, '');
+            value = value.replace(/,/g, '.');
+            
+            // Format dengan titik setiap 3 digit dari belakang
+            if (value.length > 3) {
+                // Pisahkan bagian desimal jika ada
+                let parts = value.split('.');
+                let integerPart = parts[0];
+                let decimalPart = parts.length > 1 ? '.' + parts[1] : '';
+                
+                // Format bagian integer dengan titik
+                integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                value = integerPart + decimalPart;
+            }
+            
+            // Update nilai input
+            input.value = value;
+        }
+        
+        // Fungsi untuk mengubah string format angka menjadi angka murni
+        function parseNumber(str) {
+            if (!str) return 0;
+            // Hapus semua titik dan ganti koma dengan titik untuk desimal
+            let cleanStr = str.toString().replace(/\./g, '').replace(',', '.');
+            return parseFloat(cleanStr) || 0;
+        }
+        
+        // Fungsi untuk memformat angka ke string dengan titik
+        function formatNumber(num) {
+            if (!num && num !== 0) return '0';
+            let parts = num.toString().split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            return parts.join(',');
+        }
+        
         // DOM Ready
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Simulation page loaded');
             
-            // ✅ PERBAIKAN: Cek apakah authSystem ada sebelum digunakan
+            // Cek authSystem
             if (!authSystem) {
                 console.error('AuthSystem tidak ditemukan!');
                 alert('Sistem autentikasi tidak tersedia. Redirect ke login...');
@@ -330,12 +489,41 @@
             // Update user info
             updateUserInfo();
             
-            // Initialize form
+            // Initialize form dengan format titik
             initializeForm();
             
             // Setup event listeners
             setupEventListeners();
+            
+            // Tambahkan event listener untuk format otomatis
+            setupFormattingListeners();
         });
+        
+        // Setup event listeners untuk format otomatis
+        function setupFormattingListeners() {
+            const formatInputs = [
+                'seedCost', 'fertilizerCost', 'laborCost', 
+                'estimatedHarvest', 'pricePerKg', 'landArea'
+            ];
+            
+            formatInputs.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    // Format saat input berubah
+                    input.addEventListener('input', function() {
+                        formatNumberInput(this);
+                    });
+                    
+                    // Format saat kehilangan fokus
+                    input.addEventListener('blur', function() {
+                        formatNumberInput(this);
+                    });
+                    
+                    // Format saat halaman dimuat
+                    formatNumberInput(input);
+                }
+            });
+        }
         
         // Setup event listeners
         function setupEventListeners() {
@@ -357,11 +545,7 @@
                 resetBtn.addEventListener('click', resetForm);
             }
             
-            // Export PDF button
-            const exportBtn = document.getElementById('exportPdfBtn');
-            if (exportBtn) {
-                exportBtn.addEventListener('click', exportToPDF);
-            }
+            // Export PDF button sudah pakai onclick langsung
             
             // Crop type change
             const cropSelect = document.getElementById('cropType');
@@ -373,16 +557,16 @@
             const unitButtons = document.querySelectorAll('.unit-btn');
             unitButtons.forEach(btn => {
                 btn.addEventListener('click', function() {
-                    // Remove active class from all buttons
                     unitButtons.forEach(b => b.classList.remove('active'));
-                    
-                    // Add active class to clicked button
                     this.classList.add('active');
-                    
-                    // Update hidden input
                     document.getElementById('unit').value = this.dataset.unit;
                     
-                    // Recalculate if we have a current calculation
+                    // Update unit display
+                    const areaUnitDisplay = document.getElementById('areaUnitDisplay');
+                    if (areaUnitDisplay) {
+                        areaUnitDisplay.textContent = this.dataset.unit === 'hektar' ? 'Ha' : 'm²';
+                    }
+                    
                     if (currentCalculation) {
                         calculateSimulation();
                     }
@@ -418,16 +602,15 @@
             const sidebarUserLevel = document.getElementById('sidebarUserLevel');
             
             if (sidebarUserName) sidebarUserName.textContent = currentUser.name;
-            if (sidebarUserPoints) sidebarUserPoints.textContent = currentUser.points || 0;
-            if (sidebarUserSimulations) sidebarUserSimulations.textContent = currentUser.simulationsCount || 0;
-            if (sidebarUserLevel) sidebarUserLevel.textContent = currentUser.level || 1;
+            if (sidebarUserPoints) sidebarUserPoints.textContent = formatNumber(currentUser.points || 0);
+            if (sidebarUserSimulations) sidebarUserSimulations.textContent = formatNumber(currentUser.simulationsCount || 0);
+            if (sidebarUserLevel) sidebarUserLevel.textContent = formatNumber(currentUser.level || 1);
         }
         
         // Update crop defaults
         function updateCropDefaults() {
             const cropType = document.getElementById('cropType').value;
             
-            // Check if calculator has this method
             if (calculator && calculator.getCropDefaults) {
                 const cropData = calculator.getCropDefaults(cropType);
                 
@@ -435,8 +618,14 @@
                     const harvestInput = document.getElementById('estimatedHarvest');
                     const priceInput = document.getElementById('pricePerKg');
                     
-                    if (harvestInput) harvestInput.value = cropData.harvest || 6000;
-                    if (priceInput) priceInput.value = cropData.price || 5000;
+                    if (harvestInput) {
+                        harvestInput.value = formatNumber(cropData.harvest || 6000);
+                        formatNumberInput(harvestInput);
+                    }
+                    if (priceInput) {
+                        priceInput.value = formatNumber(cropData.price || 5000);
+                        formatNumberInput(priceInput);
+                    }
                 }
             }
         }
@@ -444,34 +633,29 @@
         // Calculate simulation
         function calculateSimulation() {
             try {
-                // Get form values
+                // Get form values dengan parsing angka berformat
                 const formData = {
                     cropType: document.getElementById('cropType').value,
-                    landArea: parseFloat(document.getElementById('landArea').value) || 1,
+                    landArea: parseNumber(document.getElementById('landArea').value) || 1,
                     unit: document.getElementById('unit').value,
-                    seedCost: parseFloat(document.getElementById('seedCost').value) || 0,
-                    fertilizerCost: parseFloat(document.getElementById('fertilizerCost').value) || 0,
-                    laborCost: parseFloat(document.getElementById('laborCost').value) || 0,
-                    estimatedHarvest: parseFloat(document.getElementById('estimatedHarvest').value) || 0,
-                    pricePerKg: parseFloat(document.getElementById('pricePerKg').value) || 0
+                    seedCost: parseNumber(document.getElementById('seedCost').value) || 0,
+                    fertilizerCost: parseNumber(document.getElementById('fertilizerCost').value) || 0,
+                    laborCost: parseNumber(document.getElementById('laborCost').value) || 0,
+                    estimatedHarvest: parseNumber(document.getElementById('estimatedHarvest').value) || 0,
+                    pricePerKg: parseNumber(document.getElementById('pricePerKg').value) || 0
                 };
                 
-                // Validate
                 if (formData.landArea <= 0) {
                     alert('Luas lahan harus lebih dari 0');
                     return;
                 }
                 
-                // Check if calculator exists
                 if (!calculator || typeof calculator.calculate !== 'function') {
                     alert('Kalkulator tidak tersedia!');
                     return;
                 }
                 
-                // Calculate
                 currentCalculation = calculator.calculate(formData);
-                
-                // Display results
                 displayResults(currentCalculation);
                 
             } catch (error) {
@@ -482,12 +666,10 @@
         
         // Display results
         function displayResults(result) {
-            // Format currency
             const formatCurrency = (amount) => {
-                return 'Rp ' + amount.toLocaleString('id-ID');
+                return 'Rp ' + formatNumber(amount);
             };
             
-            // Update result cards
             const totalCostElement = document.getElementById('totalCost');
             const totalRevenueElement = document.getElementById('totalRevenue');
             const profitElement = document.getElementById('profit');
@@ -504,11 +686,9 @@
                 roiElement.className = result.roi >= 0 ? 'result-value profit' : 'result-value loss';
             }
             
-            // Show results card
             const resultsCard = document.getElementById('resultsCard');
             if (resultsCard) resultsCard.style.display = 'block';
             
-            // Create chart
             createChart(result);
         }
         
@@ -523,7 +703,6 @@
                 { label: 'Keuntungan', value: result.profit, color: result.profit >= 0 ? '#059669' : '#dc2626' }
             ];
             
-            // Find max value for scaling
             const maxValue = Math.max(...chartData.map(d => Math.abs(d.value)));
             
             let chartHTML = '<div class="chart-bars">';
@@ -538,14 +717,13 @@
                         </div>
                         <div class="chart-bar-container">
                             <div class="chart-bar" style="width: ${percentage}%; background: ${data.color}"></div>
-                            <span class="chart-value">Rp ${Math.abs(data.value).toLocaleString('id-ID')}</span>
+                            <span class="chart-value">Rp ${formatNumber(Math.abs(data.value))}</span>
                         </div>
                     </div>
                 `;
             });
             
             chartHTML += '</div>';
-            
             chartContainer.innerHTML = chartHTML;
         }
         
@@ -556,7 +734,6 @@
                 return;
             }
             
-            // Use the database from included scripts
             const db = window.AgroDB || window.db;
             
             if (!db || typeof db.addSimulation !== 'function') {
@@ -564,14 +741,12 @@
                 return;
             }
             
-            // Add user ID to calculation
             const simulationData = {
                 ...currentCalculation,
                 userId: currentUser.id,
                 createdAt: new Date().toISOString()
             };
             
-            // Save to database
             const saved = db.addSimulation(simulationData);
             
             if (!saved) {
@@ -579,53 +754,177 @@
                 return;
             }
             
-            // Update user points if function exists
             if (db.updateUserPoints && typeof db.updateUserPoints === 'function') {
                 db.updateUserPoints(currentUser.id, 10);
             }
             
-            // Refresh current user data
             currentUser = authSystem.getCurrentUser ? authSystem.getCurrentUser() : currentUser;
-            
-            // Update sidebar info
             updateUserInfo();
             
-            // Show success message
             alert('✅ Simulasi berhasil disimpan! +10 Poin');
             
-            // Optionally redirect to dashboard after 2 seconds
             setTimeout(() => {
                 window.location.href = 'dashboard.html';
             }, 2000);
         }
         
-        // Export to PDF
+        // ===== PDF EXPORT FUNCTION =====
         function exportToPDF() {
             if (!currentCalculation) {
                 alert('Harap hitung simulasi terlebih dahulu!');
                 return;
             }
             
-            alert('Fitur export PDF sedang dalam pengembangan.');
+            // Cek apakah jsPDF tersedia
+            if (typeof window.jspdf === 'undefined') {
+                alert('Sistem export PDF belum siap. Silakan refresh halaman.');
+                console.error('jsPDF not loaded');
+                return;
+            }
+            
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Judul
+                doc.setFontSize(20);
+                doc.setTextColor(40, 180, 99);
+                doc.text('AgroProfit', 105, 20, { align: 'center' });
+                
+                doc.setFontSize(16);
+                doc.setTextColor(0, 0, 0);
+                doc.text('HASIL SIMULASI PERTANIAN', 105, 30, { align: 'center' });
+                
+                // Garis pemisah
+                doc.setDrawColor(200, 200, 200);
+                doc.line(20, 35, 190, 35);
+                
+                // Info pengguna
+                doc.setFontSize(10);
+                doc.setTextColor(100, 100, 100);
+                if (currentUser) {
+                    doc.text(`Nama: ${currentUser.name}`, 20, 45);
+                    doc.text(`Tanggal: ${new Date().toLocaleDateString('id-ID')}`, 20, 50);
+                }
+                
+                // Data input
+                doc.setFontSize(14);
+                doc.setTextColor(0, 0, 0);
+                doc.text('DATA INPUT:', 20, 65);
+                
+                doc.setFontSize(10);
+                let y = 72;
+                
+                const cropNames = {
+                    'padi': 'Padi Sawah', 'jagung': 'Jagung', 'kedelai': 'Kedelai',
+                    'cabe': 'Cabe Merah', 'tomat': 'Tomat', 'bawang': 'Bawang Merah'
+                };
+                
+                const inputData = [
+                    ['Jenis Tanaman', cropNames[document.getElementById('cropType').value] || 'Tanaman'],
+                    ['Luas Lahan', `${document.getElementById('landArea').value} ${document.getElementById('unit').value === 'meter' ? 'm²' : 'Hektar'}`],
+                    ['Biaya Bibit', formatCurrencyForPDF(parseNumber(document.getElementById('seedCost').value) || 0)],
+                    ['Biaya Pupuk', formatCurrencyForPDF(parseNumber(document.getElementById('fertilizerCost').value) || 0)],
+                    ['Biaya Tenaga Kerja', formatCurrencyForPDF(parseNumber(document.getElementById('laborCost').value) || 0)],
+                    ['Estimasi Panen', `${document.getElementById('estimatedHarvest').value} kg`],
+                    ['Harga per kg', formatCurrencyForPDF(parseNumber(document.getElementById('pricePerKg').value) || 0)]
+                ];
+                
+                inputData.forEach(([label, value]) => {
+                    doc.text(`${label}:`, 25, y);
+                    doc.text(value, 80, y);
+                    y += 6;
+                });
+                
+                // Hasil simulasi
+                y += 10;
+                doc.setFontSize(14);
+                doc.text('HASIL SIMULASI:', 20, y);
+                
+                y += 10;
+                doc.setFontSize(12);
+                
+                const results = [
+                    ['Total Modal', formatCurrencyForPDF(currentCalculation.totalCost)],
+                    ['Total Pendapatan', formatCurrencyForPDF(currentCalculation.totalRevenue)],
+                    ['Keuntungan', formatCurrencyForPDF(currentCalculation.profit), currentCalculation.profit >= 0 ? [46, 125, 50] : [198, 40, 40]],
+                    ['ROI', `${currentCalculation.roi}%`, currentCalculation.roi >= 0 ? [46, 125, 50] : [198, 40, 40]]
+                ];
+                
+                results.forEach(([label, value, color]) => {
+                    if (color) {
+                        doc.setTextColor(color[0], color[1], color[2]);
+                    } else {
+                        doc.setTextColor(0, 0, 0);
+                    }
+                    
+                    doc.text(`${label}:`, 25, y);
+                    doc.text(value, 80, y);
+                    y += 8;
+                });
+                
+                // Analisis
+                y += 10;
+                doc.setFontSize(14);
+                doc.setTextColor(0, 0, 0);
+                doc.text('ANALISIS:', 20, y);
+                
+                y += 10;
+                doc.setFontSize(10);
+                
+                let analysis = '';
+                if (currentCalculation.profit > 0) {
+                    if (currentCalculation.roi > 50) {
+                        analysis = 'Hasil simulasi menunjukkan keuntungan yang SANGAT BAIK dengan ROI di atas 50%. Disarankan untuk melanjutkan rencana ini.';
+                    } else if (currentCalculation.roi > 20) {
+                        analysis = 'Hasil simulasi menunjukkan keuntungan yang BAIK dengan ROI 20-50%. Usaha ini layak dijalankan.';
+                    } else {
+                        analysis = 'Hasil simulasi menunjukkan keuntungan MODERAT. Pertimbangkan optimasi biaya untuk meningkatkan ROI.';
+                    }
+                } else {
+                    analysis = 'Hasil simulasi menunjukkan KERUGIAN. Disarankan untuk: 1) Meninjau biaya produksi, 2) Mencari pemasok lebih murah, 3) Pertimbangkan tanaman lain.';
+                }
+                
+                // Split text agar tidak keluar halaman
+                const lines = doc.splitTextToSize(analysis, 160);
+                lines.forEach(line => {
+                    doc.text(line, 25, y);
+                    y += 6;
+                });
+                
+                // Footer
+                doc.setFontSize(8);
+                doc.setTextColor(150, 150, 150);
+                doc.text('© ' + new Date().getFullYear() + ' AgroProfit - www.agroprofit.example.com', 105, 285, { align: 'center' });
+                
+                // Simpan PDF
+                const cropType = document.getElementById('cropType').value;
+                const filename = `Simulasi_${cropNames[cropType] || 'Pertanian'}_${new Date().getTime()}.pdf`;
+                doc.save(filename);
+                
+                alert(`✅ PDF berhasil diexport: ${filename}`);
+                console.log('PDF exported:', filename);
+                
+            } catch (error) {
+                console.error('Export PDF error:', error);
+                alert('❌ Gagal mengexport PDF: ' + error.message);
+            }
+        }
+        
+        // Helper function untuk format mata uang di PDF
+        function formatCurrencyForPDF(amount) {
+            return 'Rp ' + formatNumber(amount);
         }
         
         // Reset form
         function resetForm() {
-            const landAreaInput = document.getElementById('landArea');
-            const seedCostInput = document.getElementById('seedCost');
-            const fertilizerCostInput = document.getElementById('fertilizerCost');
-            const laborCostInput = document.getElementById('laborCost');
-            const harvestInput = document.getElementById('estimatedHarvest');
-            const priceInput = document.getElementById('pricePerKg');
+            document.getElementById('landArea').value = '1';
+            document.getElementById('seedCost').value = '2.000.000';
+            document.getElementById('fertilizerCost').value = '1.500.000';
+            document.getElementById('laborCost').value = '3.000.000';
+            document.getElementById('estimatedHarvest').value = '6.000';
+            document.getElementById('pricePerKg').value = '5.000';
             
-            if (landAreaInput) landAreaInput.value = 1;
-            if (seedCostInput) seedCostInput.value = 2000000;
-            if (fertilizerCostInput) fertilizerCostInput.value = 1500000;
-            if (laborCostInput) laborCostInput.value = 3000000;
-            if (harvestInput) harvestInput.value = 6000;
-            if (priceInput) priceInput.value = 5000;
-            
-            // Reset unit toggle
             document.querySelectorAll('.unit-btn').forEach(btn => {
                 btn.classList.remove('active');
                 if (btn.dataset.unit === 'hektar') {
@@ -633,17 +932,16 @@
                 }
             });
             
-            const unitInput = document.getElementById('unit');
-            if (unitInput) unitInput.value = 'hektar';
+            document.getElementById('unit').value = 'hektar';
             
-            // Hide results card
+            // Update unit display
+            const areaUnitDisplay = document.getElementById('areaUnitDisplay');
+            if (areaUnitDisplay) areaUnitDisplay.textContent = 'Ha';
+            
             const resultsCard = document.getElementById('resultsCard');
             if (resultsCard) resultsCard.style.display = 'none';
             
-            // Reset current calculation
             currentCalculation = null;
-            
-            // Update crop defaults
             updateCropDefaults();
             
             alert('Form telah direset ke nilai default.');
@@ -660,6 +958,10 @@
                 }, 500);
             }
         }
+        
+        // Ekspor fungsi ke window
+        window.exportToPDF = exportToPDF;
+        window.logout = logout;
     </script>
 </body>
 </html>

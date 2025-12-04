@@ -79,18 +79,18 @@ class AuthSystem {
         console.log('✅ User logged out');
     }
 
-    // Get current logged in user
+    
     getCurrentUser() {
         return AgroDB.getCurrentUser();
     }
 
-    // Check if user is authenticated
+    
     isAuthenticated() {
         const user = this.getCurrentUser();
         return !!user;
     }
 
-    // Check auth and redirect if not logged in
+    
     requireAuth(redirectTo = 'login.html') {
         if (!this.isAuthenticated()) {
             window.location.href = redirectTo;
@@ -100,20 +100,20 @@ class AuthSystem {
     }
 }
 
-// ===== INITIALIZE AND SETUP =====
 
-// Create global instance immediately
-window.Auth = new AuthSystem();
 
-// Wait for DOM to be ready
+
+window.Auth = new AuthSystem()
+
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ Auth.js loaded successfully');
     
-    // Debug: Check if AgroDB is available
+    
     console.log('AgroDB available:', typeof AgroDB !== 'undefined');
     console.log('Auth instance:', window.Auth);
     
-    // Auto-redirect if user is already logged in (for login page)
+
     if (window.location.pathname.includes('login.html')) {
         if (window.Auth.isAuthenticated()) {
             console.log('User already logged in, redirecting to dashboard...');
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Setup login form if exists
+    
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         console.log('Login form found, setting up event listener...');
